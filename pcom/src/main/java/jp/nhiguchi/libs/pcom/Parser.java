@@ -28,8 +28,7 @@ public final class Parser<T> {
 
 		final <S> Result<S> apply(Parser<S> p, Position pos) {
 			Arg a = new Arg(pos, fMemo);
-			Ret<S> r = p.doParse(a);
-			return r.fResult;
+			return p.doParse(a);
 		}
 	}
 
@@ -79,26 +78,17 @@ public final class Parser<T> {
 		}
 	}
 
-	private static final class Ret<T> {
-		private final Result<T> fResult;
-
-		private Ret(Result result) {
-			fResult = result;
-		}
-	}
-
-	private Ret<T> getCache(Arg arg) {
+	private Result<T> getCache(Arg arg) {
 		Position pos = arg.fPos;
 
 		Result<T> m = arg.fMemo.get(this, pos);
-		if (m != null)
-			return new Ret(m);
+		if (m != null) return m;
 
 		return null;
 	}
 
-	private Ret<T> doParse(Arg arg) {
-		Ret<T> ret = getCache(arg);
+	private Result<T> doParse(Arg arg) {
+		Result<T> ret = getCache(arg);
 		if (ret != null) return ret;
 
 		Position pos = arg.fPos;
@@ -108,7 +98,7 @@ public final class Parser<T> {
 		Result<T> r = fFunctor.parse(c, pos);
 		arg.fMemo.put(this, pos, r);
 
-		return new Ret(r);
+		return r;
 	}
 
 	static <T> Result<T> fail(Context c, Position p, Result.Error err) {
@@ -126,8 +116,7 @@ public final class Parser<T> {
 	Result<T> parse(Source s) {
 		Arg arg = new Arg(Position.startOf(s), new Memo());
 
-		Ret<T> r = doParse(arg);
-		return r.fResult;
+		return doParse(arg);
 	}
 
 	public Result<T> parse(String str) {
@@ -141,8 +130,7 @@ public final class Parser<T> {
 	public Result<T> parse(Position pos) {
 		Arg arg = new Arg(pos, new Memo());
 
-		Ret<T> r = doParse(arg);
-		return r.fResult;
+		return doParse(arg);
 	}
 
 	@Override
