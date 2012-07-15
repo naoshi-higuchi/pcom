@@ -16,9 +16,19 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>jp.nhiguchi.libs</groupId>
+			<artifactId>tuple</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<dependency>
+			<groupId>jp.nhiguchi.libs</groupId>
+			<artifactId>flist</artifactId>
+			<version>0.1</version>
+		</dependency>
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
+			<version>4.10</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
