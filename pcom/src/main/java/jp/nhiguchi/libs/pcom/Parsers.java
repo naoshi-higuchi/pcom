@@ -208,6 +208,34 @@ public final class Parsers {
 		return precededBy(not(ex), p);
 	}
 
+	public static <T> Parser<List<T>> sepBy(
+			Parser<? extends T> p, Parser<?> sep) {
+		if (p == null || sep == null) throw nullArgEx();
+		Parser<List<T>> empty = map(new Map1<Void, List<T>>() {
+			public List<T> map(Void v) {
+				return flist();
+			}
+		}, not(p));
+
+		return or(empty, sepBy1(p, sep));
+	}
+
+	public static <T> Parser<List<T>> sepBy1(
+			Parser<? extends T> p, Parser<?> sep) {
+		if (p == null || sep == null) throw nullArgEx();
+
+		Parser<T> q = precededBy(sep, p);
+		Parser<List<T>> qs = rep(q);
+
+		Map2<T, List<T>, List<T>> toList = new Map2<T, List<T>, List<T>>() {
+			public List<T> map(T v1, List<T> v2) {
+				return cons(v1, flist(v2));
+			}
+		};
+
+		return map(toList, p, qs);
+	}
+
 	public static Parser<String> expr(String expr) {
 		checkNotNull(expr);
 
