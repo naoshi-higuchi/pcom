@@ -72,8 +72,8 @@ public final class Parsers {
 	}
 
 	public static <T> Parser<List<T>> rep1(Parser<? extends T> p) {
-		Map2<T, List<? extends T>, List<T>> conc = new Map2<T, List<? extends T>, List<T>>() {
-			public List<T> map(T src1, List<? extends T> src2) {
+		Map2<T, List<T>, List<T>> conc = new Map2<T, List<T>, List<T>>() {
+			public List<T> map(T src1, List<T> src2) {
 				return flist(src2).prepend(src1);
 			}
 		};
