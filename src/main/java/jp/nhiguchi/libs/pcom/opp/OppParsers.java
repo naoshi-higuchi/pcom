@@ -1,6 +1,7 @@
 package jp.nhiguchi.libs.pcom.opp;
 
 import java.util.*;
+import java.util.function.Function;
 
 import jp.nhiguchi.libs.flist.*;
 import static jp.nhiguchi.libs.flist.FList.*;
@@ -10,7 +11,7 @@ import jp.nhiguchi.libs.tuple.*;
 import jp.nhiguchi.libs.pcom.*;
 import static jp.nhiguchi.libs.pcom.Parsers.*;
 
-import static jp.nhiguchi.libs.pcom.opp.Operator.Fixity.*;
+import static jp.nhiguchi.libs.pcom.opp.OppOperator.Fixity.*;
 
 /**
  *
@@ -21,16 +22,16 @@ final class OppParsers {
 	}
 
 	static <T> Parser<T> oppParser(
-			OpTable<T> opTbl,
+			OppOperatorTable<T> opTbl,
 			FList<Pair<Parser<String>, Parser<String>>> parens,
 			Parser<T> operandParser) {
 		RecursionMark<T> mark = new RecursionMark();
-		Parser<T> par = parened(parens, recur(mark));
+		Parser<T> par = parenthesized(parens, recur(mark));
 		Parser<T> term = or(par, operandParser);
 		return mark(mark, compose(opTbl, term));
 	}
 
-	private static <T> Parser<T> parened(
+	private static <T> Parser<T> parenthesized(
 			FList<Pair<Parser<String>, Parser<String>>> parens,
 			Parser<T> expr) {
 		FList<Parser<T>> ps = flist();
@@ -42,95 +43,82 @@ final class OppParsers {
 		return or(ps.reverse());
 	}
 
-	private static <T> Parser<Operator<T>> pOps(List<Operator<T>> ops) {
-		FList<Parser<Operator<T>>> ps = flist();
-		for (Operator<T> op : ops) {
+	private static <T> Parser<OppOperator<T>> pOps(List<OppOperator<T>> ops) {
+		FList<Parser<OppOperator<T>>> ps = flist();
+		for (OppOperator<T> op : ops) {
 			ps = cons(op.parser(), ps);
 		}
 		return or(ps);
 	}
 
-	private static <T> FList<Operator<T>> yfxs(List<Operator<T>> ops) {
-		FList<Operator<T>> res = flist();
-		for (Operator<T> op : ops) {
+	private static <T> FList<OppOperator<T>> yfxs(List<OppOperator<T>> ops) {
+		FList<OppOperator<T>> res = flist();
+		for (OppOperator<T> op : ops) {
 			if (op.fix() == YFX) res = cons(op, res);
 		}
 		return res;
 	}
 
-	private static <T> Parser<T> yfx(List<Operator<T>> ops, Parser<T> operand) {
-		Parser<Operator<T>> pops = pOps(ops);
-		Parser<List<Pair<Operator<T>, T>>> tail = rep(pair(pops, operand));
-		Parser<Pair<T, List<Pair<Operator<T>, T>>>> p = pair(operand, tail);
-		Map1<Pair<T, List<Pair<Operator<T>, T>>>, T> applyL = new Map1<Pair<T, List<Pair<Operator<T>, T>>>, T>() {
-			public T map(
-					Pair<T, List<Pair<Operator<T>, T>>> x) {
-				T res = x.get1st();
-				for (Pair<Operator<T>, T> te : x.get2nd()) {
-					Operator<T> op = te.get1st();
-					T opr = te.get2nd();
-					res = op.bmap().map(res, opr);
-				}
-				return res;
+	private static <T> Parser<T> yfx(List<OppOperator<T>> ops, Parser<T> operand) {
+		Parser<OppOperator<T>> pops = pOps(ops);
+		Parser<List<Pair<OppOperator<T>, T>>> tail = rep(pair(pops, operand));
+		Parser<Pair<T, List<Pair<OppOperator<T>, T>>>> p = pair(operand, tail);
+		Function<Pair<T, List<Pair<OppOperator<T>, T>>>, T> applyL = x -> {
+			T res = x.get1st();
+			for (Pair<OppOperator<T>, T> te : x.get2nd()) {
+				OppOperator<T> op = te.get1st();
+				T opr = te.get2nd();
+				res = op.binaryOperator().apply(res, opr);
 			}
+			return res;
 		};
 
 		return map(applyL, p);
 	}
 
-	private static <T> FList<Operator<T>> yfs(List<Operator<T>> ops) {
-		FList<Operator<T>> res = flist();
-		for (Operator<T> op : ops) {
+	private static <T> FList<OppOperator<T>> yfs(List<OppOperator<T>> ops) {
+		FList<OppOperator<T>> res = flist();
+		for (OppOperator<T> op : ops) {
 			if (op.fix() == YF) res = cons(op, res);
 		}
 		return res;
 	}
 
-	private static <T> Parser<T> yf(List<Operator<T>> ops, Parser<T> operand) {
-		Parser<Operator<T>> pops = pOps(ops);
-		Parser<List<Operator<T>>> tail = rep(pops);
-		Parser<Pair<T, List<Operator<T>>>> p = pair(operand, tail);
-		Map1<Pair<T, List<Operator<T>>>, T> applyL = new Map1<Pair<T, List<Operator<T>>>, T>() {
-			public T map(Pair<T, List<Operator<T>>> x) {
-				T res = x.get1st();
-				for (Operator<T> op : x.get2nd()) {
-					res = op.umap().map(res);
-				}
-				return res;
+	private static <T> Parser<T> yf(List<OppOperator<T>> ops, Parser<T> operand) {
+		Parser<OppOperator<T>> pops = pOps(ops);
+		Parser<List<OppOperator<T>>> tail = rep(pops);
+		Parser<Pair<T, List<OppOperator<T>>>> p = pair(operand, tail);
+		Function<Pair<T, List<OppOperator<T>>>, T> applyL = x -> {
+			T res = x.get1st();
+			for (OppOperator<T> op : x.get2nd()) {
+				res = op.unaryOperator().apply(res);
 			}
+			return res;
 		};
 
 		return map(applyL, p);
 	}
 
-	private static <T> Map1<Pair<T, T>, T> bin(final Operator<T> op) {
-		return new Map1<Pair<T, T>, T>() {
-			public T map(Pair<T, T> x) {
-				return op.bmap().map(
-						x.get1st(), x.get2nd());
-			}
-		};
+	private static <T> Function<Pair<T, T>, T> bin(final OppOperator<T> op) {
+		return x -> op.binaryOperator().apply(
+				x.get1st(), x.get2nd());
 	}
 
 	private static <T> Parser<T> binary(
 			final Parser<T> left,
-			final Operator<T> op,
+			final OppOperator<T> op,
 			final Parser<T> right) {
 		Parser<Pair<T, T>> p = pair(followedBy(left, op.parser()), right);
 
 		return map(bin(op), p);
 	}
 
-	private static <T> Map1<T, T> uni(final Operator<T> op) {
-		return new Map1<T, T>() {
-			public T map(T x) {
-				return op.umap().map(x);
-			}
-		};
+	private static <T> Function<T, T> uni(final OppOperator<T> op) {
+		return x -> op.unaryOperator().apply(x);
 	}
 
 	private static <T> Parser<T> prefix(
-			final Operator<T> op,
+			final OppOperator<T> op,
 			final Parser<T> operand) {
 		Parser<T> p = precededBy(op.parser(), operand);
 
@@ -139,26 +127,26 @@ final class OppParsers {
 
 	private static <T> Parser<T> postfix(
 			final Parser<T> operand,
-			final Operator<T> op) {
+			final OppOperator<T> op) {
 		Parser<T> p = followedBy(operand, op.parser());
 
 		return map(uni(op), p);
 	}
 
 	private static <T> Parser<T> compose(
-			OpTable<T> rest, Parser<T> term) {
+			OppOperatorTable<T> rest, Parser<T> term) {
 		if (rest.isEmpty()) return term;
 
 		Parser<T> prec = compose(rest.tail(), term); // more preceding.
-		FList<Operator<T>> column = rest.head();
+		FList<OppOperator<T>> column = rest.head();
 
-		RecursionMark<T> mark = new RecursionMark<T>();
+		RecursionMark<T> mark = new RecursionMark<>();
 		Parser<T> preceq = recur(mark);
 
-		FList<Operator<T>> yfxs = yfxs(column);
-		FList<Operator<T>> yfs = yfs(column);
+		FList<OppOperator<T>> yfxs = yfxs(column);
+		FList<OppOperator<T>> yfs = yfs(column);
 		FList<Parser<T>> ps = flist();
-		for (Operator<T> op : column) {
+		for (OppOperator<T> op : column) {
 			Parser<T> p;
 			switch (op.fix()) {
 				case XFX:

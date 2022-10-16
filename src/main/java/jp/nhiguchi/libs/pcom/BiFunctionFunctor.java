@@ -1,18 +1,20 @@
 package jp.nhiguchi.libs.pcom;
 
+import java.util.function.BiFunction;
+
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
 /**
  *
  * @author naoshi
  */
-final class Map2Functor<From1, From2, To> implements ParseFunctor<To> {
-	private final Map2<From1, From2, To> fM;
+final class BiFunctionFunctor<From1, From2, To> implements ParseFunctor<To> {
+	private final BiFunction<From1, From2, To> fM;
 	private final Parser<? extends From1> fP1;
 	private final Parser<? extends From2> fP2;
 
-	Map2Functor(Map2<From1, From2, To> m,
-			Parser<? extends From1> p1, Parser<? extends From2> p2) {
+	BiFunctionFunctor(BiFunction<From1, From2, To> m,
+					  Parser<? extends From1> p1, Parser<? extends From2> p2) {
 		fM = m;
 		fP1 = p1;
 		fP2 = p2;
@@ -26,7 +28,7 @@ final class Map2Functor<From1, From2, To> implements ParseFunctor<To> {
 		if (r2.isFail()) return fail(c, p, r2.error());
 
 		try {
-			To res = fM.map(r1.value(), r2.value());
+			To res = fM.apply(r1.value(), r2.value());
 			return Result.success(res, r2.rest());
 		} catch (MappingException e) {
 			return fail(c, p);
@@ -37,9 +39,9 @@ final class Map2Functor<From1, From2, To> implements ParseFunctor<To> {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof Map2Functor)) return false;
+		if (!(obj instanceof BiFunctionFunctor)) return false;
 
-		Map2Functor rhs = (Map2Functor) obj;
+		BiFunctionFunctor rhs = (BiFunctionFunctor) obj;
 		return fM.equals(rhs.fM)
 				&& fP1.equals(rhs.fP1)
 				&& fP2.equals(rhs.fP2);

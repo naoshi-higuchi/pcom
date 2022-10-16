@@ -7,6 +7,10 @@ package jp.nhiguchi.libs.pcom.opp;
 import jp.nhiguchi.libs.pcom.*;
 import org.junit.jupiter.api.*;
 
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.UnaryOperator;
+
 import static jp.nhiguchi.libs.pcom.Parsers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,81 +46,45 @@ public class OppBuilderTest {
 	public void testToParser() {
 		System.out.println("toParser");
 		Parser<String> ws = expr("[ \t]*");
-		Map1<String, Integer> toInt = new Map1<String, Integer>() {
-			public Integer map(String s) {
-				return Integer.parseInt(s);
-			}
-		};
+		Function<String, Integer> toInt = s -> Integer.parseInt(s);
 		Parser<Integer> num = map(toInt, trim(ws, expr("[0-9]+")));
 
-		Binary<Integer> add = new Binary<Integer>() {
-			public Integer map(Integer x1, Integer x2) {
-				return x1 + x2;
-			}
-		};
-		Operator<Integer> addOp = Operator.infixL(700, add, trim(ws, string("+")));
+		BinaryOperator<Integer> add = (x1, x2) -> x1 + x2;
+		OppOperator<Integer> addOp = OppOperator.infixL(700, add, trim(ws, string("+")));
 
-		Binary<Integer> sub = new Binary<Integer>() {
-			public Integer map(Integer x1, Integer x2) {
-				return x1 - x2;
-			}
-		};
-		Operator<Integer> subOp = Operator.infixL(700, sub, trim(ws, string("-")));
+		BinaryOperator<Integer> sub = (x1, x2) -> x1 - x2;
+		OppOperator<Integer> subOp = OppOperator.infixL(700, sub, trim(ws, string("-")));
 
-		Binary<Integer> mult = new Binary<Integer>() {
-			public Integer map(Integer x1, Integer x2) {
-				return x1 * x2;
-			}
-		};
-		Operator<Integer> multOp = Operator.infixL(800, mult, trim(ws, string("*")));
+		BinaryOperator<Integer> mult = (x1, x2) -> x1 * x2;
+		OppOperator<Integer> multOp = OppOperator.infixL(800, mult, trim(ws, string("*")));
 
-		Binary<Integer> div = new Binary<Integer>() {
-			public Integer map(Integer x1, Integer x2) {
-				return x1 / x2;
-			}
-		};
-		Operator<Integer> divOp = Operator.infixL(800, div, trim(ws, string("/")));
+		BinaryOperator<Integer> div = (x1, x2) -> x1 / x2;
+		OppOperator<Integer> divOp = OppOperator.infixL(800, div, trim(ws, string("/")));
 
-		Unary<Integer> incr = new Unary<Integer>() {
-			public Integer map(Integer x) {
-				return ++x;
-			}
-		};
-		Operator<Integer> incrOp = Operator.postfixL(900, incr, trim(ws, string(".incr")));
+		UnaryOperator<Integer> incr = x -> ++x;
+		OppOperator<Integer> incrOp = OppOperator.postfixL(900, incr, trim(ws, string(".incr")));
 
-		Unary<Integer> plus = new Unary<Integer>() {
-			public Integer map(Integer x) {
-				return x;
-			}
-		};
-		Operator<Integer> plusOp = Operator.prefix(1000, plus, trim(ws, string("+")));
+		UnaryOperator<Integer> plus = x -> x;
+		OppOperator<Integer> plusOp = OppOperator.prefix(1000, plus, trim(ws, string("+")));
 
-		Unary<Integer> minus = new Unary<Integer>() {
-			public Integer map(Integer x) {
-				return -x;
-			}
-		};
-		Operator<Integer> minusOp = Operator.prefix(1000, minus, trim(ws, string("-")));
+		UnaryOperator<Integer> minus = x -> -x;
+		OppOperator<Integer> minusOp = OppOperator.prefix(1000, minus, trim(ws, string("-")));
 
-		Unary<Integer> fact = new Unary<Integer>() {
-			public Integer map(Integer x) {
-				int res = 1;
-				for (int i = 1; i <= x; ++i)
-					res *= i;
-				return res;
-			}
+		UnaryOperator<Integer> fact = x -> {
+			int res = 1;
+			for (int i = 1; i <= x; ++i)
+				res *= i;
+			return res;
 		};
-		Operator<Integer> factOp = Operator.postfix(1200, fact, trim(ws, string("!")));
+		OppOperator<Integer> factOp = OppOperator.postfix(1200, fact, trim(ws, string("!")));
 
-		Binary<Integer> pow = new Binary<Integer>() {
-			public Integer map(Integer x1, Integer x2) {
-				int res = 1;
-				for (int i = 1; i <= x2; ++i)
-					res *= x1;
-				return res;
-			}
+		BinaryOperator<Integer> pow = (x1, x2) -> {
+			int res = 1;
+			for (int i = 1; i <= x2; ++i)
+				res *= x1;
+			return res;
 		};
-		Operator<Integer> powOp = Operator.infixR(1100, pow, trim(ws, string("**")));
+		OppOperator<Integer> powOp = OppOperator.infixR(1100, pow, trim(ws, string("**")));
 
 		Parser<String> lpar = trim(ws, string("("));
 		Parser<String> rpar = trim(ws, string(")"));

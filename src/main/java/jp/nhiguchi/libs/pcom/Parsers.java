@@ -1,6 +1,8 @@
 package jp.nhiguchi.libs.pcom;
 
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import jp.nhiguchi.libs.tuple.Pair;
 import static jp.nhiguchi.libs.flist.FList.*;
@@ -72,11 +74,7 @@ public final class Parsers {
 	}
 
 	public static <T> Parser<List<T>> rep1(Parser<? extends T> p) {
-		Map2<T, List<T>, List<T>> conc = new Map2<T, List<T>, List<T>>() {
-			public List<T> map(T src1, List<T> src2) {
-				return flist(src2).prepend(src1);
-			}
-		};
+		BiFunction<T, List<T>, List<T>> conc = (src1, src2) -> flist(src2).prepend(src1);
 
 		return map(conc, p, rep(p));
 	}
@@ -90,19 +88,19 @@ public final class Parsers {
 	}
 
 	public static <From, To> Parser<To> map(
-			Map1<From, To> m, Parser<? extends From> p) {
+			Function<From, To> m, Parser<? extends From> p) {
 		return Maps.map(m, p);
 	}
 
 	public static <From1, From2, To> Parser<To> map(
-			Map2<From1, From2, To> m,
+			BiFunction<From1, From2, To> m,
 			Parser<? extends From1> p1,
 			Parser<? extends From2> p2) {
 		return Maps.map(m, p1, p2);
 	}
 
 	public static <From1, From2, From3, To> Parser<To> map(
-			Map3<From1, From2, From3, To> m,
+			TriFunction<From1, From2, From3, To> m,
 			Parser<? extends From1> p1,
 			Parser<? extends From2> p2,
 			Parser<? extends From3> p3) {
@@ -123,11 +121,7 @@ public final class Parsers {
 			Parser<?> preceder, Parser<? extends T> p) {
 		checkNotNull(preceder, p);
 
-		Map2<Object, T, T> drop1st = new Map2<Object, T, T>() {
-			public T map(Object ignore, T v) {
-				return v;
-			}
-		};
+		BiFunction<Object, T, T> drop1st = (ignore, v) -> v;
 
 		return map(drop1st, preceder, p);
 	}
@@ -136,11 +130,7 @@ public final class Parsers {
 			Parser<? extends T> p, Parser<?> follower) {
 		checkNotNull(p, follower);
 
-		Map2<T, Object, T> drop2nd = new Map2<T, Object, T>() {
-			public T map(T v, Object ignore) {
-				return v;
-			}
-		};
+		BiFunction<T, Object, T> drop2nd = (v, ignore) -> v;
 
 		return map(drop2nd, p, follower);
 	}
@@ -149,11 +139,7 @@ public final class Parsers {
 			Parser<?> preceder, Parser<? extends T> p, Parser<?> follower) {
 		checkNotNull(preceder, p, follower);
 
-		Map3<Object, T, Object, T> take2nd = new Map3<Object, T, Object, T>() {
-			public T map(Object ignore1, T v, Object ignore2) {
-				return v;
-			}
-		};
+		TriFunction<Object, T, Object, T> take2nd = (ignore1, v, ignore2) -> v;
 
 		return map(take2nd, preceder, p, follower);
 	}
@@ -161,11 +147,7 @@ public final class Parsers {
 	public static <T, U> Parser<Pair<T, U>> pair(Parser<? extends T> p1, Parser<? extends U> p2) {
 		checkNotNull(p1, p2);
 
-		Map2<T, U, Pair<T, U>> mkPair = new Map2<T, U, Pair<T, U>>() {
-			public Pair<T, U> map(T e1, U e2) {
-				return Pair.newPair(e1, e2);
-			}
-		};
+		BiFunction<T, U, Pair<T, U>> mkPair = (e1, e2) -> Pair.newPair(e1, e2);
 
 		return map(mkPair, p1, p2);
 	}
@@ -184,14 +166,12 @@ public final class Parsers {
 	public static Parser<String> concat(Parser<? extends List<String>> p) {
 		checkNotNull(p);
 
-		Map1<List<String>, String> conc = new Map1<List<String>, String>() {
-			public String map(List<String> strs) {
-				StringBuilder sb = new StringBuilder();
-				for (String str : strs) {
-					sb.append(str);
-				}
-				return sb.toString();
+		Function<List<String>, String> conc = strs -> {
+			StringBuilder sb = new StringBuilder();
+			for (String str : strs) {
+				sb.append(str);
 			}
+			return sb.toString();
 		};
 
 		return map(conc, p);
@@ -211,11 +191,7 @@ public final class Parsers {
 	public static <T> Parser<List<T>> sepBy(
 			Parser<? extends T> p, Parser<?> sep) {
 		if (p == null || sep == null) throw nullArgEx();
-		Parser<List<T>> empty = map(new Map1<Void, List<T>>() {
-			public List<T> map(Void v) {
-				return flist();
-			}
-		}, not(p));
+		Parser<List<T>> empty = map(v -> flist(), not(p));
 
 		return or(empty, sepBy1(p, sep));
 	}
@@ -227,11 +203,7 @@ public final class Parsers {
 		Parser<T> q = precededBy(sep, p);
 		Parser<List<T>> qs = rep(q);
 
-		Map2<T, List<T>, List<T>> toList = new Map2<T, List<T>, List<T>>() {
-			public List<T> map(T v1, List<T> v2) {
-				return cons(v1, flist(v2));
-			}
-		};
+		BiFunction<T, List<T>, List<T>> toList = (v1, v2) -> cons(v1, flist(v2));
 
 		return map(toList, p, qs);
 	}

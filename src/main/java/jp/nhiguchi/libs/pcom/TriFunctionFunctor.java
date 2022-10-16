@@ -6,16 +6,16 @@ import static jp.nhiguchi.libs.pcom.Parser.*;
  *
  * @author naoshi
  */
-final class Map3Functor<From1, From2, From3, To> implements ParseFunctor<To> {
-	private final Map3<From1, From2, From3, To> fM;
+final class TriFunctionFunctor<From1, From2, From3, To> implements ParseFunctor<To> {
+	private final TriFunction<From1, From2, From3, To> fM;
 	private final Parser<? extends From1> fP1;
 	private final Parser<? extends From2> fP2;
 	private final Parser<? extends From3> fP3;
 
-	Map3Functor(Map3<From1, From2, From3, To> m,
-			Parser<? extends From1> p1,
-			Parser<? extends From2> p2,
-			Parser<? extends From3> p3) {
+	TriFunctionFunctor(TriFunction<From1, From2, From3, To> m,
+					   Parser<? extends From1> p1,
+					   Parser<? extends From2> p2,
+					   Parser<? extends From3> p3) {
 		fM = m;
 		fP1 = p1;
 		fP2 = p2;
@@ -33,7 +33,7 @@ final class Map3Functor<From1, From2, From3, To> implements ParseFunctor<To> {
 		if (r3.isFail()) return fail(c, p, r3.error());
 
 		try {
-			To res = fM.map(r1.value(), r2.value(), r3.value());
+			To res = fM.apply(r1.value(), r2.value(), r3.value());
 			return Result.success(res, r3.rest());
 		} catch (MappingException e) {
 			return fail(c, p);
@@ -44,9 +44,9 @@ final class Map3Functor<From1, From2, From3, To> implements ParseFunctor<To> {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof Map3Functor)) return false;
+		if (!(obj instanceof TriFunctionFunctor)) return false;
 
-		Map3Functor rhs = (Map3Functor) obj;
+		TriFunctionFunctor rhs = (TriFunctionFunctor) obj;
 		return fM.equals(rhs.fM)
 				&& fP1.equals(rhs.fP1)
 				&& fP2.equals(rhs.fP2)

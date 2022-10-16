@@ -9,24 +9,24 @@ import jp.nhiguchi.libs.tuple.*;
 import static jp.nhiguchi.libs.tuple.Pair.*;
 
 import jp.nhiguchi.libs.pcom.*;
-import jp.nhiguchi.libs.pcom.opp.Operator.Fixity;
-import static jp.nhiguchi.libs.pcom.opp.Operator.Fixity.*;
+import jp.nhiguchi.libs.pcom.opp.OppOperator.Fixity;
+import static jp.nhiguchi.libs.pcom.opp.OppOperator.Fixity.*;
 
 /**
  *
  * @author Naoshi HIGUCHI
  */
 public class OppBuilder<T> {
-	private final NavigableMap<Integer, FList<Operator<T>>> fMap = new TreeMap();
+	private final NavigableMap<Integer, FList<OppOperator<T>>> fMap = new TreeMap();
 	private final HashSet<Pair<Parser<String>, Parser<String>>> fParens = new HashSet();
 	private Parser<T> fOperandParser = null;
 
 	public OppBuilder() {
 	}
 
-	private boolean isAmbiguous(FList<Operator<T>> column) {
+	private boolean isAmbiguous(FList<OppOperator<T>> column) {
 		Set<Fixity> fixes = new HashSet();
-		for (Operator<T> op : column) {
+		for (OppOperator<T> op : column) {
 			fixes.add(op.fix());
 		}
 		return (fixes.contains(YFX) && fixes.contains(XFY))
@@ -37,8 +37,8 @@ public class OppBuilder<T> {
 				|| (fixes.contains(FY) && fixes.contains(YF));
 	}
 
-	public OppBuilder add(Operator<T> op) {
-		FList<Operator<T>> column = fMap.get(op.prec());
+	public OppBuilder add(OppOperator<T> op) {
+		FList<OppOperator<T>> column = fMap.get(op.prec());
 		column = (column == null) ? flist(op) : cons(op, column);
 		if (isAmbiguous(column)) {
 			throw new IllegalArgumentException("Ambiguous grammar.");
@@ -64,6 +64,6 @@ public class OppBuilder<T> {
 
 	public Parser<T> toParser() {
 		return OppParsers.oppParser(
-				OpTable.create(fMap), flist(fParens), fOperandParser);
+				OppOperatorTable.create(fMap), flist(fParens), fOperandParser);
 	}
 }
