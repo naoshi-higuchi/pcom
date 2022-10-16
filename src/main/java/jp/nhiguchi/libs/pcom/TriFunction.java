@@ -1,5 +1,8 @@
 package jp.nhiguchi.libs.pcom;
 
+import java.util.Objects;
+import java.util.function.Function;
+
 /**
  *
  * @author Naoshi HIGUCHI
@@ -16,4 +19,9 @@ public interface TriFunction<From1, From2, From3, To> {
 	 * @return mapped (converted) value.
 	 */
 	To apply(From1 src1, From2 src2, From3 src3);
+
+	default <V> TriFunction<From1, From2, From3, V> andThen(Function<? super To,? extends V> after) {
+		Objects.requireNonNull(after);
+		return (From1 src1, From2 src2, From3 src3) -> after.apply(apply(src1, src2, src3));
+	}
 }
