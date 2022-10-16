@@ -4,7 +4,8 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- *
+ * Represents a function that accepts three arguments and produces a result.
+ * This is three-arity specialization of {@link java.util.function.Function}
  * @author Naoshi HIGUCHI
  */
 @FunctionalInterface
