@@ -4,17 +4,13 @@
  */
 package jp.nhiguchi.libs.pcom;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.*;
 
 import java.util.*;
 import static jp.nhiguchi.libs.flist.FList.*;
 
 import static jp.nhiguchi.libs.pcom.Primitives.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
@@ -24,19 +20,19 @@ public class ParserTest {
 	public ParserTest() {
 	}
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUpClass() throws Exception {
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void tearDownClass() throws Exception {
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 	}
 

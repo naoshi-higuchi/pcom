@@ -4,15 +4,11 @@
  */
 package jp.nhiguchi.libs.pcom;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.*;
 
 import static jp.nhiguchi.libs.pcom.Primitives.*;
 import static jp.nhiguchi.libs.pcom.Recursions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -22,19 +18,19 @@ public class RecursionsTest {
 	public RecursionsTest() {
 	}
 
-	@BeforeClass
+	@BeforeAll
 	public static void setUpClass() throws Exception {
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void tearDownClass() throws Exception {
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 	}
 
