@@ -83,7 +83,7 @@ public final class Parsers {
 		return Recursions.mark(m, p);
 	}
 
-	public static <T> Parser<T> recur(RecursionMark<T> m) {
+	public static <T> Parser<T> recurse(RecursionMark<T> m) {
 		return Recursions.recur(m);
 	}
 

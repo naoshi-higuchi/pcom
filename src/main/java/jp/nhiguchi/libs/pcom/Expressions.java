@@ -148,7 +148,7 @@ final class Expressions {
 
 	static Parser<Parser<String>> primary() {
 		return or(
-				body(open(), recur(EXPR_MARK), close()),
+				body(open(), recurse(EXPR_MARK), close()),
 				literal(), charClass(), anyChar());
 	}
 

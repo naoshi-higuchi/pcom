@@ -26,7 +26,7 @@ final class OppParsers {
 			FList<Pair<Parser<String>, Parser<String>>> parens,
 			Parser<T> operandParser) {
 		RecursionMark<T> mark = new RecursionMark();
-		Parser<T> par = parenthesized(parens, recur(mark));
+		Parser<T> par = parenthesized(parens, recurse(mark));
 		Parser<T> term = or(par, operandParser);
 		return mark(mark, compose(opTbl, term));
 	}
@@ -141,7 +141,7 @@ final class OppParsers {
 		FList<OppOperator<T>> column = rest.head();
 
 		RecursionMark<T> mark = new RecursionMark<>();
-		Parser<T> preceq = recur(mark);
+		Parser<T> preceq = recurse(mark);
 
 		FList<OppOperator<T>> yfxs = yfxs(column);
 		FList<OppOperator<T>> yfs = yfs(column);
