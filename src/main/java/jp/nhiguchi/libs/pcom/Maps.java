@@ -2,12 +2,13 @@ package jp.nhiguchi.libs.pcom;
 
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 final class Maps {
 	static <From, To> Parser<To> map(

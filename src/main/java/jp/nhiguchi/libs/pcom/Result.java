@@ -7,7 +7,7 @@ import static jp.nhiguchi.libs.flist.FList.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 public final class Result<T> {
 	public static final class Error<T> {

@@ -6,7 +6,7 @@ import static jp.nhiguchi.libs.pcom.Parser.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 final class BiFunctionFunctor<From1, From2, To> implements ParseFunctor<To> {
 	private final BiFunction<From1, From2, To> fM;

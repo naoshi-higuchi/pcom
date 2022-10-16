@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 public class ExpressionsTest {
 	public ExpressionsTest() {

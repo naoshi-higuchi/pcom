@@ -3,13 +3,14 @@ package jp.nhiguchi.libs.pcom;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import jp.nhiguchi.libs.tuple.Pair;
 import static jp.nhiguchi.libs.flist.FList.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 public final class Parsers {
 	private Parsers() {

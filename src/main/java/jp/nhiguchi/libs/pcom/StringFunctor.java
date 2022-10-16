@@ -4,7 +4,7 @@ import static jp.nhiguchi.libs.pcom.Parser.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 final class StringFunctor implements ParseFunctor<String> {
 	private final String fStr;

@@ -4,7 +4,7 @@ import java.util.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 public final class Parser<T> {
 	private final ParseFunctor<T> fFunctor;

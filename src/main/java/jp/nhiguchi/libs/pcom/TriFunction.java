@@ -2,7 +2,7 @@ package jp.nhiguchi.libs.pcom;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 @FunctionalInterface
 public interface TriFunction<From1, From2, From3, To> {

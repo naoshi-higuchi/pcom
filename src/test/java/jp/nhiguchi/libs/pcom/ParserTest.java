@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 public class ParserTest {
 	public ParserTest() {

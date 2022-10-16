@@ -9,7 +9,7 @@ import static jp.nhiguchi.libs.pcom.Parser.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 final class RepFunctor<T> implements ParseFunctor<List<T>> {
 	private Parser<? extends T> fP;

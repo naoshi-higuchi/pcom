@@ -1,15 +1,12 @@
 package jp.nhiguchi.libs.pcom;
 
-import jp.nhiguchi.libs.pcom.MappingException;
-import jp.nhiguchi.libs.pcom.Parser;
-import jp.nhiguchi.libs.pcom.Position;
-import jp.nhiguchi.libs.pcom.Predicate;
-import jp.nhiguchi.libs.pcom.Result;
+import java.util.function.Predicate;
+
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 final class CondFunctor<T> implements ParseFunctor<T> {
 	private final Predicate<T> fPred;
@@ -25,7 +22,7 @@ final class CondFunctor<T> implements ParseFunctor<T> {
 		if (r.isFail()) return fail(c, p, r.error());
 
 		try {
-			if (fPred.eval(r.value()))
+			if (fPred.test(r.value()))
 				return Result.success(r.value(), r.rest());
 
 			return fail(c, p);

@@ -4,7 +4,7 @@ import static jp.nhiguchi.libs.pcom.Parser.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 final class AndFunctor implements ParseFunctor<Void> {
 	private Parser<?> fP;

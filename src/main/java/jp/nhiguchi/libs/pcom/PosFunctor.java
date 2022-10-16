@@ -4,7 +4,7 @@ import static jp.nhiguchi.libs.pcom.Parser.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 final class PosFunctor<T, P> implements ParseFunctor<P> {
 	private final Positional<T, P> fPositional;

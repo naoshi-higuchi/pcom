@@ -3,6 +3,7 @@ package jp.nhiguchi.libs.pcom;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static jp.nhiguchi.libs.pcom.Parsers.*;
 
@@ -11,7 +12,7 @@ import jp.nhiguchi.libs.tuple.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 final class Expressions {
 	private static Parser<String> eol() {

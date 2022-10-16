@@ -15,7 +15,7 @@ import static jp.nhiguchi.libs.pcom.Parsers.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 public class ParsersTest {
 	public ParsersTest() {

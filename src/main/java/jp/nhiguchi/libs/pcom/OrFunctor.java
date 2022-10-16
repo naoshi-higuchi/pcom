@@ -9,7 +9,7 @@ import static jp.nhiguchi.libs.pcom.Parser.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 final class OrFunctor<T> implements ParseFunctor<T> {
 	private final FList<Parser<? extends T>> fPs;

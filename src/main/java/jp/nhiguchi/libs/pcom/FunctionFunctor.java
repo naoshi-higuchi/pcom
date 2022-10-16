@@ -6,7 +6,7 @@ import static jp.nhiguchi.libs.pcom.Parser.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 class FunctionFunctor<From, To> implements ParseFunctor<To> {
 	private final Function<From, To> fM;

@@ -2,7 +2,7 @@ package jp.nhiguchi.libs.pcom;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 public interface Positional<T, P> {
 	/**

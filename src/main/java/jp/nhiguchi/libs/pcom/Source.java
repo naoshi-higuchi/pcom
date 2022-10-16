@@ -5,7 +5,7 @@ import java.nio.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 class Source {
 	private String fStr = "";

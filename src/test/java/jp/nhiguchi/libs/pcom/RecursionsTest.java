@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 public class RecursionsTest {
 	public RecursionsTest() {

@@ -4,7 +4,7 @@ import static jp.nhiguchi.libs.pcom.Parser.*;
 
 /**
  *
- * @author naoshi
+ * @author Naoshi HIGUCHI
  */
 final class TriFunctionFunctor<From1, From2, From3, To> implements ParseFunctor<To> {
 	private final TriFunction<From1, From2, From3, To> fM;
