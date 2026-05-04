@@ -1,16 +1,7 @@
 package jp.nhiguchi.libs.pcom;
 
-import jp.nhiguchi.libs.pcom.MappingException;
-import jp.nhiguchi.libs.pcom.Parser;
-import jp.nhiguchi.libs.pcom.Position;
-import jp.nhiguchi.libs.pcom.Predicate;
-import jp.nhiguchi.libs.pcom.Result;
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
-/**
- *
- * @author naoshi
- */
 final class CondFunctor<T> implements ParseFunctor<T> {
 	private final Predicate<T> fPred;
 	private final Parser<? extends T> fP;
@@ -38,9 +29,7 @@ final class CondFunctor<T> implements ParseFunctor<T> {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof CondFunctor)) return false;
-
-		CondFunctor rhs = (CondFunctor) obj;
+		if (!(obj instanceof CondFunctor<?> rhs)) return false;
 		return fPred.equals(rhs.fPred) && fP.equals(rhs.fP);
 	}
 

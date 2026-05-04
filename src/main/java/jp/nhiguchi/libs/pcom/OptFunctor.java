@@ -2,10 +2,6 @@ package jp.nhiguchi.libs.pcom;
 
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
-/**
- *
- * @author naoshi
- */
 final class OptFunctor<T> implements ParseFunctor<T> {
 	private Parser<? extends T> fP;
 
@@ -24,9 +20,7 @@ final class OptFunctor<T> implements ParseFunctor<T> {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof OptFunctor)) return false;
-
-		OptFunctor rhs = (OptFunctor) obj;
+		if (!(obj instanceof OptFunctor<?> rhs)) return false;
 		return fP.equals(rhs.fP);
 	}
 

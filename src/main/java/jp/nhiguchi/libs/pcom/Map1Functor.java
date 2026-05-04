@@ -2,10 +2,6 @@ package jp.nhiguchi.libs.pcom;
 
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
-/**
- *
- * @author naoshi
- */
 class Map1Functor<From, To> implements ParseFunctor<To> {
 	private final Map1<From, To> fM;
 	private final Parser<? extends From> fP;
@@ -31,9 +27,7 @@ class Map1Functor<From, To> implements ParseFunctor<To> {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof Map1Functor)) return false;
-
-		Map1Functor rhs = (Map1Functor) obj;
+		if (!(obj instanceof Map1Functor<?, ?> rhs)) return false;
 		return fM.equals(rhs.fM) && fP.equals(rhs.fP);
 	}
 

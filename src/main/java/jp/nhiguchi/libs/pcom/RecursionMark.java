@@ -2,12 +2,8 @@ package jp.nhiguchi.libs.pcom;
 
 import java.util.concurrent.atomic.*;
 
-/**
- *
- * @author Naoshi HIGUCHI
- */
 public final class RecursionMark<T> {
-	private AtomicReference<Parser<? extends T>> fMark = new AtomicReference(null);
+	private AtomicReference<Parser<? extends T>> fMark = new AtomicReference<>(null);
 
 	public RecursionMark() {
 	}

@@ -2,10 +2,6 @@ package jp.nhiguchi.libs.pcom;
 
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
-/**
- *
- * @author naoshi
- */
 final class AndFunctor implements ParseFunctor<Void> {
 	private Parser<?> fP;
 
@@ -24,9 +20,7 @@ final class AndFunctor implements ParseFunctor<Void> {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof AndFunctor)) return false;
-
-		AndFunctor rhs = (AndFunctor) obj;
+		if (!(obj instanceof AndFunctor rhs)) return false;
 		return fP.equals(rhs.fP);
 	}
 

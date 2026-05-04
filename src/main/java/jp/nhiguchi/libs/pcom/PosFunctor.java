@@ -2,10 +2,6 @@ package jp.nhiguchi.libs.pcom;
 
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
-/**
- *
- * @author naoshi
- */
 final class PosFunctor<T, P> implements ParseFunctor<P> {
 	private final Positional<T, P> fPositional;
 	private final Parser<? extends T> fP;
@@ -31,9 +27,7 @@ final class PosFunctor<T, P> implements ParseFunctor<P> {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof PosFunctor)) return false;
-
-		PosFunctor rhs = (PosFunctor) obj;
+		if (!(obj instanceof PosFunctor<?, ?> rhs)) return false;
 		return fPositional.equals(rhs.fPositional) && fP.equals(rhs.fP);
 	}
 

@@ -2,10 +2,6 @@ package jp.nhiguchi.libs.pcom;
 
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
-/**
- *
- * @author naoshi
- */
 final class NotFunctor implements ParseFunctor<Void> {
 	private Parser<?> fP;
 
@@ -24,9 +20,7 @@ final class NotFunctor implements ParseFunctor<Void> {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof NotFunctor)) return false;
-
-		NotFunctor rhs = (NotFunctor) obj;
+		if (!(obj instanceof NotFunctor rhs)) return false;
 		return fP.equals(rhs.fP);
 	}
 

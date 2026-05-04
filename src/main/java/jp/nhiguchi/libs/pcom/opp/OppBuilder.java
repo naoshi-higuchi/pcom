@@ -12,20 +12,16 @@ import jp.nhiguchi.libs.pcom.*;
 import jp.nhiguchi.libs.pcom.opp.Operator.Fixity;
 import static jp.nhiguchi.libs.pcom.opp.Operator.Fixity.*;
 
-/**
- *
- * @author Naoshi HIGUCHI
- */
 public class OppBuilder<T> {
-	private final NavigableMap<Integer, FList<Operator<T>>> fMap = new TreeMap();
-	private final HashSet<Pair<Parser<String>, Parser<String>>> fParens = new HashSet();
+	private final NavigableMap<Integer, FList<Operator<T>>> fMap = new TreeMap<>();
+	private final HashSet<Pair<Parser<String>, Parser<String>>> fParens = new HashSet<>();
 	private Parser<T> fOperandParser = null;
 
 	public OppBuilder() {
 	}
 
 	private boolean isAmbiguous(FList<Operator<T>> column) {
-		Set<Fixity> fixes = new HashSet();
+		Set<Fixity> fixes = new HashSet<>();
 		for (Operator<T> op : column) {
 			fixes.add(op.fix());
 		}
@@ -37,7 +33,7 @@ public class OppBuilder<T> {
 				|| (fixes.contains(FY) && fixes.contains(YF));
 	}
 
-	public OppBuilder add(Operator<T> op) {
+	public OppBuilder<T> add(Operator<T> op) {
 		FList<Operator<T>> column = fMap.get(op.prec());
 		column = (column == null) ? flist(op) : cons(op, column);
 		if (isAmbiguous(column)) {
@@ -47,7 +43,7 @@ public class OppBuilder<T> {
 		return this;
 	}
 
-	public OppBuilder addParentheses(Parser<String> lPar,
+	public OppBuilder<T> addParentheses(Parser<String> lPar,
 			Parser<String> rPar) {
 		if (lPar == null || rPar == null) {
 			throw new IllegalArgumentException();
@@ -57,7 +53,7 @@ public class OppBuilder<T> {
 		return this;
 	}
 
-	public OppBuilder setOperandParser(Parser<T> p) {
+	public OppBuilder<T> setOperandParser(Parser<T> p) {
 		fOperandParser = p;
 		return this;
 	}

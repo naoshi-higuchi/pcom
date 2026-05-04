@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.nhiguchi.libs.pcom;
 
 import org.junit.jupiter.api.*;
@@ -9,33 +5,8 @@ import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- *
- * @author naoshi
- */
 public class ExpressionsTest {
-	public ExpressionsTest() {
-	}
 
-	@BeforeAll
-	public static void setUpClass() throws Exception {
-	}
-
-	@AfterAll
-	public static void tearDownClass() throws Exception {
-	}
-
-	@BeforeEach
-	public void setUp() {
-	}
-
-	@AfterEach
-	public void tearDown() {
-	}
-
-	/**
-	 * Test of range method, of class Expressions.
-	 */
 	@Test
 	public void testRange() {
 		System.out.println("range");
@@ -49,9 +20,6 @@ public class ExpressionsTest {
 		assertTrue(p.parse("d").isFail());
 	}
 
-	/**
-	 * Test of charClass method, of class Expressions.
-	 */
 	@Test
 	public void testCharClass() {
 		System.out.println("charClass");
@@ -71,9 +39,6 @@ public class ExpressionsTest {
 		assertTrue(p.parse("-").isSuccess());
 	}
 
-	/**
-	 * Test of literal method, of class Expressions.
-	 */
 	@Test
 	public void testLiteral() {
 		System.out.println("literal");
@@ -89,9 +54,6 @@ public class ExpressionsTest {
 		assertTrue(p.parse("\\").isSuccess());
 	}
 
-	/**
-	 * Test of anyChar method, of class Expressions.
-	 */
 	@Test
 	public void testAnyChar() {
 		System.out.println("anyChar");
@@ -106,9 +68,6 @@ public class ExpressionsTest {
 		assertTrue(p.parse(".").isSuccess());
 	}
 
-	/**
-	 * Test of primary method, of class Expressions.
-	 */
 	@Test
 	public void testPrimary() {
 		System.out.println("primary()");
@@ -127,9 +86,6 @@ public class ExpressionsTest {
 		assertTrue(p.parse("@").isSuccess());
 	}
 
-	/**
-	 * Test of suffix method, of class Expressions.
-	 */
 	@Test
 	public void testSuffix() {
 		System.out.println("suffix()");
@@ -155,9 +111,6 @@ public class ExpressionsTest {
 		assertTrue(p.parse("").isFail());
 	}
 
-	/**
-	 * Test of prefix method, of class Expressions.
-	 */
 	@Test
 	public void testPrefix() {
 		System.out.println("prefix()");
@@ -182,9 +135,6 @@ public class ExpressionsTest {
 		assertEquals(0, r.rest().asInt());
 	}
 
-	/**
-	 * Test of sequence method, of class Expressions.
-	 */
 	@Test
 	public void testSequence() {
 		System.out.println("sequence()");
@@ -202,9 +152,6 @@ public class ExpressionsTest {
 		assertTrue(p.parse("foggy").isSuccess());
 	}
 
-	/**
-	 * Test of expression method, of class Expressions.
-	 */
 	@Test
 	public void testExpression() {
 		System.out.println("expression()");

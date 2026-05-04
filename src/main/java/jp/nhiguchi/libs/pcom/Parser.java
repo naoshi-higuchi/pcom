@@ -2,10 +2,6 @@ package jp.nhiguchi.libs.pcom;
 
 import java.util.*;
 
-/**
- *
- * @author naoshi
- */
 public final class Parser<T> {
 	private final ParseFunctor<T> fFunctor;
 
@@ -14,14 +10,14 @@ public final class Parser<T> {
 	}
 
 	static <T> Parser<T> parser(ParseFunctor<T> functor) {
-		return new Parser(functor);
+		return new Parser<>(functor);
 	}
 
 	static final class Context {
-		private final Parser fOwner;
+		private final Parser<?> fOwner;
 		private final Memo fMemo;
 
-		private Context(Parser owner, Memo memo) {
+		private Context(Parser<?> owner, Memo memo) {
 			fOwner = owner;
 			fMemo = memo;
 		}
@@ -32,76 +28,64 @@ public final class Parser<T> {
 		}
 	}
 
-	static interface ParseFunctor<T> {
+	@FunctionalInterface
+	interface ParseFunctor<T> {
 		Result<T> parse(Context c, Position p);
 	}
 
 	private static final class Cache<E> {
-		private final Map<Position, Map<Parser, E>> fMap = new HashMap();
+		private final Map<Position, Map<Parser<?>, E>> fMap = new HashMap<>();
 
-		private <T> void put(Parser<T> p, Position pos, E value) {
-			Map<Parser, E> map = fMap.get(pos);
+		private void put(Parser<?> p, Position pos, E value) {
+			Map<Parser<?>, E> map = fMap.get(pos);
 			if (map == null) {
-				map = new HashMap();
+				map = new HashMap<>();
 				fMap.put(pos, map);
 			}
 			map.put(p, value);
 		}
 
-		private <T> E get(Parser<T> p, Position pos) {
-			Map<Parser, E> map = fMap.get(pos);
+		private E get(Parser<?> p, Position pos) {
+			Map<Parser<?>, E> map = fMap.get(pos);
 			if (map == null) return null;
-
-			return (E) map.get(p);
+			return map.get(p);
 		}
 	}
 
 	private static final class Memo {
-		private final Cache<Result> fCache = new Cache();
+		private final Cache<Result<?>> fCache = new Cache<>();
 
-		private <T> void put(Parser<T> p, Position pos, Result value) {
+		private <T> void put(Parser<?> p, Position pos, Result<T> value) {
 			fCache.put(p, pos, value);
 		}
 
-		private <T> Result<T> get(Parser<T> p, Position pos) {
+		@SuppressWarnings("unchecked")
+		private <T> Result<T> get(Parser<?> p, Position pos) {
+			// heterogeneous container: safe because we always put Result<T> under Parser<T>
 			return (Result<T>) fCache.get(p, pos);
 		}
 	}
 
-	private static final class Arg {
-		private final Position fPos;
-		private final Memo fMemo;
-
-		private Arg(Position pos, Memo memo) {
-			fPos = pos;
-			fMemo = memo;
-		}
-	}
+	private record Arg(Position pos, Memo memo) {}
 
 	private Result<T> getCache(Arg arg) {
-		Position pos = arg.fPos;
-
-		Result<T> m = arg.fMemo.get(this, pos);
-		if (m != null) return m;
-
-		return null;
+		return arg.memo().get(this, arg.pos());
 	}
 
 	private Result<T> doParse(Arg arg) {
 		Result<T> ret = getCache(arg);
 		if (ret != null) return ret;
 
-		Position pos = arg.fPos;
-
-		Context c = new Context(this, arg.fMemo);
+		Position pos = arg.pos();
+		Context c = new Context(this, arg.memo());
 
 		Result<T> r = fFunctor.parse(c, pos);
-		arg.fMemo.put(this, pos, r);
+		arg.memo().put(this, pos, r);
 
 		return r;
 	}
 
-	static <T> Result<T> fail(Context c, Position p, Result.Error err) {
+	static <T> Result<T> fail(Context c, Position p, Result.Error<?> err) {
 		return Result.fail(c.fOwner, p, err);
 	}
 
@@ -109,13 +93,12 @@ public final class Parser<T> {
 		return Result.fail(c.fOwner, p);
 	}
 
-	static <T> Result<T> fail(Context c, Position p, List<Result.Error> errors) {
+	static <T> Result<T> fail(Context c, Position p, List<Result.Error<?>> errors) {
 		return Result.fail(c.fOwner, p, errors);
 	}
 
 	Result<T> parse(Source s) {
 		Arg arg = new Arg(Position.startOf(s), new Memo());
-
 		return doParse(arg);
 	}
 
@@ -129,7 +112,6 @@ public final class Parser<T> {
 
 	public Result<T> parse(Position pos) {
 		Arg arg = new Arg(pos, new Memo());
-
 		return doParse(arg);
 	}
 
@@ -137,9 +119,7 @@ public final class Parser<T> {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof Parser)) return false;
-
-		Parser rhs = (Parser) obj;
+		if (!(obj instanceof Parser<?> rhs)) return false;
 		return fFunctor.equals(rhs.fFunctor);
 	}
 

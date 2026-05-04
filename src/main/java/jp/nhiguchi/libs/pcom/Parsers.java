@@ -5,10 +5,6 @@ import java.util.List;
 import jp.nhiguchi.libs.tuple.Pair;
 import static jp.nhiguchi.libs.flist.FList.*;
 
-/**
- *
- * @author naoshi
- */
 public final class Parsers {
 	private Parsers() {
 	}
@@ -72,13 +68,7 @@ public final class Parsers {
 	}
 
 	public static <T> Parser<List<T>> rep1(Parser<? extends T> p) {
-		Map2<T, List<T>, List<T>> conc = new Map2<T, List<T>, List<T>>() {
-			public List<T> map(T src1, List<T> src2) {
-				return flist(src2).prepend(src1);
-			}
-		};
-
-		return map(conc, p, rep(p));
+		return map((T src1, List<T> src2) -> flist(src2).prepend(src1), p, rep(p));
 	}
 
 	public static <T> Parser<T> mark(RecursionMark<T> m, Parser<? extends T> p) {
@@ -122,52 +112,24 @@ public final class Parsers {
 	public static <T> Parser<T> precededBy(
 			Parser<?> preceder, Parser<? extends T> p) {
 		checkNotNull(preceder, p);
-
-		Map2<Object, T, T> drop1st = new Map2<Object, T, T>() {
-			public T map(Object ignore, T v) {
-				return v;
-			}
-		};
-
-		return map(drop1st, preceder, p);
+		return map((Object ignore, T v) -> v, preceder, p);
 	}
 
 	public static <T> Parser<T> followedBy(
 			Parser<? extends T> p, Parser<?> follower) {
 		checkNotNull(p, follower);
-
-		Map2<T, Object, T> drop2nd = new Map2<T, Object, T>() {
-			public T map(T v, Object ignore) {
-				return v;
-			}
-		};
-
-		return map(drop2nd, p, follower);
+		return map((T v, Object ignore) -> v, p, follower);
 	}
 
 	public static <T> Parser<T> body(
 			Parser<?> preceder, Parser<? extends T> p, Parser<?> follower) {
 		checkNotNull(preceder, p, follower);
-
-		Map3<Object, T, Object, T> take2nd = new Map3<Object, T, Object, T>() {
-			public T map(Object ignore1, T v, Object ignore2) {
-				return v;
-			}
-		};
-
-		return map(take2nd, preceder, p, follower);
+		return map((Object i1, T v, Object i2) -> v, preceder, p, follower);
 	}
 
 	public static <T, U> Parser<Pair<T, U>> pair(Parser<? extends T> p1, Parser<? extends U> p2) {
 		checkNotNull(p1, p2);
-
-		Map2<T, U, Pair<T, U>> mkPair = new Map2<T, U, Pair<T, U>>() {
-			public Pair<T, U> map(T e1, U e2) {
-				return Pair.newPair(e1, e2);
-			}
-		};
-
-		return map(mkPair, p1, p2);
+		return map((T e1, U e2) -> Pair.newPair(e1, e2), p1, p2);
 	}
 
 	public static Parser<String> trim(Parser<String> trimming, Parser<String> p) {
@@ -183,18 +145,7 @@ public final class Parsers {
 
 	public static Parser<String> concat(Parser<? extends List<String>> p) {
 		checkNotNull(p);
-
-		Map1<List<String>, String> conc = new Map1<List<String>, String>() {
-			public String map(List<String> strs) {
-				StringBuilder sb = new StringBuilder();
-				for (String str : strs) {
-					sb.append(str);
-				}
-				return sb.toString();
-			}
-		};
-
-		return map(conc, p);
+		return map((List<String> strs) -> String.join("", strs), p);
 	}
 
 	public static Parser<String> concat(List<? extends Parser<String>> ps) {
@@ -211,11 +162,8 @@ public final class Parsers {
 	public static <T> Parser<List<T>> sepBy(
 			Parser<? extends T> p, Parser<?> sep) {
 		if (p == null || sep == null) throw nullArgEx();
-		Parser<List<T>> empty = map(new Map1<Void, List<T>>() {
-			public List<T> map(Void v) {
-				return flist();
-			}
-		}, not(p));
+		Map1<Void, List<T>> toEmpty = v -> flist();
+		Parser<List<T>> empty = map(toEmpty, not(p));
 
 		return or(empty, sepBy1(p, sep));
 	}
@@ -227,13 +175,7 @@ public final class Parsers {
 		Parser<T> q = precededBy(sep, p);
 		Parser<List<T>> qs = rep(q);
 
-		Map2<T, List<T>, List<T>> toList = new Map2<T, List<T>, List<T>>() {
-			public List<T> map(T v1, List<T> v2) {
-				return cons(v1, flist(v2));
-			}
-		};
-
-		return map(toList, p, qs);
+		return map((T v1, List<T> v2) -> cons(v1, flist(v2)), p, qs);
 	}
 
 	public static Parser<String> expr(String expr) {

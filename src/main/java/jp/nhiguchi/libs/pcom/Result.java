@@ -5,17 +5,13 @@ import java.util.Objects;
 
 import static jp.nhiguchi.libs.flist.FList.*;
 
-/**
- *
- * @author naoshi
- */
 public final class Result<T> {
 	public static final class Error<T> {
 		private final Parser<T> fParser;
 		private final Position fPos;
-		private final List<Error> fCauses;
+		private final List<Error<?>> fCauses;
 
-		private Error(Parser<T> p, Position pos, List<Error> causes) {
+		private Error(Parser<T> p, Position pos, List<Error<?>> causes) {
 			fParser = p;
 			fPos = pos;
 			fCauses = causes;
@@ -29,7 +25,7 @@ public final class Result<T> {
 			return fPos;
 		}
 
-		public List<Error> causes() {
+		public List<Error<?>> causes() {
 			return fCauses;
 		}
 
@@ -37,9 +33,7 @@ public final class Result<T> {
 		public boolean equals(Object obj) {
 			if (obj == null) return false;
 			if (obj == this) return true;
-			if (!(obj instanceof Error)) return false;
-
-			Error rhs = (Error) obj;
+			if (!(obj instanceof Error<?> rhs)) return false;
 			return Objects.equals(fParser, rhs.fParser)
 					&& Objects.equals(fPos, rhs.fPos)
 					&& Objects.equals(fCauses, rhs.fCauses);
@@ -66,11 +60,12 @@ public final class Result<T> {
 			return sb.toString();
 		}
 	}
+
 	private final T fValue;
 	private final Position fRest;
-	private final Error fError;
+	private final Error<T> fError;
 
-	private Result(T value, Position rest, Error error) {
+	private Result(T value, Position rest, Error<T> error) {
 		fValue = value;
 		fRest = rest;
 		fError = error;
@@ -94,43 +89,42 @@ public final class Result<T> {
 		return fError != null;
 	}
 
-	public Error error() {
+	public Error<T> error() {
 		if (isSuccess()) throw new UnsupportedOperationException();
 		return fError;
 	}
 
 	static <T> Result<T> success(T value, Position next) {
-		return new Result(value, next, null);
+		return new Result<>(value, next, null);
 	}
 
-	static <T> Result<T> fail(Parser p, Position pos, List<Error> causes) {
+	@SuppressWarnings("unchecked")
+	static <T> Result<T> fail(Parser<?> p, Position pos, List<Error<?>> causes) {
 		if (p == null || pos == null || causes == null)
 			throw new NullPointerException();
-
-		return new Result(null, null, new Error(p, pos, flist(causes)));
+		// p is Parser<?> but Error<T> stores Parser<T>; safe by erasure at runtime
+		return new Result<>(null, null, new Error<>((Parser<T>) p, pos, flist(causes)));
 	}
 
-	static <T> Result<T> fail(Parser p, Position pos, Error cause) {
+	@SuppressWarnings("unchecked")
+	static <T> Result<T> fail(Parser<?> p, Position pos, Error<?> cause) {
 		if (p == null || pos == null || cause == null)
 			throw new NullPointerException();
-
-		return new Result(null, null, new Error(p, pos, flist(cause)));
+		return new Result<>(null, null, new Error<>((Parser<T>) p, pos, flist((Error<T>) cause)));
 	}
 
-	static <T> Result<T> fail(Parser p, Position pos) {
+	@SuppressWarnings("unchecked")
+	static <T> Result<T> fail(Parser<?> p, Position pos) {
 		if (p == null || pos == null)
 			throw new NullPointerException();
-
-		return new Result(null, null, new Error(p, pos, null));
+		return new Result<>(null, null, new Error<>((Parser<T>) p, pos, null));
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof Result)) return false;
-
-		Result rhs = (Result) obj;
+		if (!(obj instanceof Result<?> rhs)) return false;
 		return Objects.equals(fValue, rhs.fValue)
 				&& Objects.equals(fRest, rhs.fRest)
 				&& Objects.equals(fError, rhs.fError);

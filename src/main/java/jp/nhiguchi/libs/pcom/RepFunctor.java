@@ -7,10 +7,6 @@ import static jp.nhiguchi.libs.flist.FList.*;
 
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
-/**
- *
- * @author naoshi
- */
 final class RepFunctor<T> implements ParseFunctor<List<T>> {
 	private Parser<? extends T> fP;
 
@@ -18,6 +14,7 @@ final class RepFunctor<T> implements ParseFunctor<List<T>> {
 		fP = p;
 	}
 
+	@SuppressWarnings("unchecked")
 	public Result<List<T>> parse(Context c, Position p) {
 		FList<T> res = flist();
 		Result<? extends T> r;
@@ -31,6 +28,7 @@ final class RepFunctor<T> implements ParseFunctor<List<T>> {
 			rest = r.rest();
 		}
 
+		// safe: FList<T>.reverse() returns List<T> at runtime despite raw return type
 		return Result.success((List<T>) res.reverse(), rest);
 	}
 
@@ -38,9 +36,7 @@ final class RepFunctor<T> implements ParseFunctor<List<T>> {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof RepFunctor)) return false;
-
-		RepFunctor rhs = (RepFunctor) obj;
+		if (!(obj instanceof RepFunctor<?> rhs)) return false;
 		return fP.equals(rhs.fP);
 	}
 

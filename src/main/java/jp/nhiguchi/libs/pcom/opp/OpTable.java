@@ -4,10 +4,6 @@ import java.util.*;
 
 import jp.nhiguchi.libs.flist.*;
 
-/**
- *
- * @author Naoshi HIGUCHI
- */
 final class OpTable<T> {
 	private final NavigableMap<Integer, FList<Operator<T>>> fMap;
 
@@ -17,9 +13,9 @@ final class OpTable<T> {
 
 	static <T> OpTable<T> create(
 			NavigableMap<Integer, FList<Operator<T>>> map) {
-		NavigableMap<Integer, FList<Operator<T>>> defensiveCopy = new TreeMap();
+		NavigableMap<Integer, FList<Operator<T>>> defensiveCopy = new TreeMap<>();
 		defensiveCopy.putAll(map);
-		return new OpTable(defensiveCopy);
+		return new OpTable<>(defensiveCopy);
 	}
 
 	FList<Operator<T>> head() {
@@ -28,7 +24,7 @@ final class OpTable<T> {
 
 	OpTable<T> tail() {
 		Integer first = fMap.firstKey();
-		return new OpTable(fMap.tailMap(first, false));
+		return new OpTable<>(fMap.tailMap(first, false));
 	}
 
 	boolean isEmpty() {

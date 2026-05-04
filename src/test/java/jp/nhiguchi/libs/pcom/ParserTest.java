@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package jp.nhiguchi.libs.pcom;
 
 import org.junit.jupiter.api.*;
@@ -12,41 +8,16 @@ import static jp.nhiguchi.libs.flist.FList.*;
 import static jp.nhiguchi.libs.pcom.Primitives.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-/**
- *
- * @author naoshi
- */
 public class ParserTest {
-	public ParserTest() {
-	}
 
-	@BeforeAll
-	public static void setUpClass() throws Exception {
-	}
-
-	@AfterAll
-	public static void tearDownClass() throws Exception {
-	}
-
-	@BeforeEach
-	public void setUp() {
-	}
-
-	@AfterEach
-	public void tearDown() {
-	}
-
-	/**
-	 * Test of parse method, of class AbstractParser.
-	 */
 	@Test
 	public void testParse() {
 		System.out.println("parse");
 		String s;
-		Parser instance;
+		Parser<?> instance;
 		String expResult;
-		List expResults;
-		Result result;
+		List<String> expResults;
+		Result<?> result;
 
 		s = "123-456";
 		instance = string("123");

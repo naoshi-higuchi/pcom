@@ -2,10 +2,6 @@ package jp.nhiguchi.libs.pcom;
 
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
-/**
- *
- * @author Naoshi HIGUCHI
- */
 final class LazyFunctor<T> implements ParseFunctor<T> {
 	private final RecursionMark<T> fMark;
 
@@ -25,9 +21,7 @@ final class LazyFunctor<T> implements ParseFunctor<T> {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof LazyFunctor)) return false;
-
-		LazyFunctor rhs = (LazyFunctor) obj;
+		if (!(obj instanceof LazyFunctor<?> rhs)) return false;
 		return fMark.equals(rhs.fMark);
 	}
 

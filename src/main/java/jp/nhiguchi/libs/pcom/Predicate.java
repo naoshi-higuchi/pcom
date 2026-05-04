@@ -1,9 +1,6 @@
 package jp.nhiguchi.libs.pcom;
 
-/**
- *
- * @author naoshi
- */
+@FunctionalInterface
 public interface Predicate<T> {
 	boolean eval(T val);
 }

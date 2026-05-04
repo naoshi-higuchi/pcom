@@ -6,10 +6,6 @@ import static jp.nhiguchi.libs.flist.FList.*;
 
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
-/**
- *
- * @author naoshi
- */
 final class Primitives {
 	private Primitives() {
 	}
@@ -19,7 +15,7 @@ final class Primitives {
 	}
 
 	static <T> Parser<T> or(List<? extends Parser<? extends T>> ps) {
-		return parser(new OrFunctor(ps));
+		return parser(new OrFunctor<>(ps));
 	}
 
 	static <T> Parser<T> or(Parser<? extends T>... ps) {
@@ -27,7 +23,7 @@ final class Primitives {
 	}
 
 	static <T> Parser<List<T>> seq(List<? extends Parser<? extends T>> ps) {
-		return parser(new SeqFunctor(ps));
+		return parser(new SeqFunctor<>(ps));
 	}
 
 	static <T> Parser<List<T>> seq(Parser<? extends T>... ps) {
@@ -47,10 +43,10 @@ final class Primitives {
 	}
 
 	static <T> Parser<T> opt(Parser<? extends T> p) {
-		return parser(new OptFunctor(p));
+		return parser(new OptFunctor<>(p));
 	}
 
 	static <T> Parser<List<T>> rep(Parser<? extends T> p) {
-		return parser(new RepFunctor(p));
+		return parser(new RepFunctor<>(p));
 	}
 }

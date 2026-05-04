@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-`pcom` is a parser combinator library for Java implementing Parsing Expression Grammars (PEG). It is a Maven library (not an application), targeting Java 7 with local dependencies on `jp.nhiguchi.libs:tuple:0.1` and `jp.nhiguchi.libs:flist:0.1`.
+`pcom` is a parser combinator library for Java implementing Parsing Expression Grammars (PEG). It is a Maven library (not an application), targeting Java 26 with local dependencies on `jp.nhiguchi.libs:tuple:0.2` and `jp.nhiguchi.libs:flist:0.3`.
 
 ## Build and Test Commands
 
@@ -43,7 +43,7 @@ mvn package
 - Recursion: `mark(RecursionMark, p)` + `recur(RecursionMark)` for left/right recursive grammars
 - Expression shorthand: `expr(String)` — parses a PEG expression string into a `Parser<String>`
 
-**`Map1<From, To>`**, **`Map2<...>`**, **`Map3<...>`** — functional interfaces for transforming parsed values (anonymous class style, pre-lambda Java 7 target).
+**`Map1<From, To>`**, **`Map2<...>`**, **`Map3<...>`** — `@FunctionalInterface` types for transforming parsed values; accept lambdas or method references.
 
 **`Predicate<T>`** — functional interface used with `cond()`.
 

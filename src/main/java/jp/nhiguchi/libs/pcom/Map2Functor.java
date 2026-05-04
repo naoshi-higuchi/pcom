@@ -2,10 +2,6 @@ package jp.nhiguchi.libs.pcom;
 
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
-/**
- *
- * @author naoshi
- */
 final class Map2Functor<From1, From2, To> implements ParseFunctor<To> {
 	private final Map2<From1, From2, To> fM;
 	private final Parser<? extends From1> fP1;
@@ -37,9 +33,7 @@ final class Map2Functor<From1, From2, To> implements ParseFunctor<To> {
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
 		if (obj == this) return true;
-		if (!(obj instanceof Map2Functor)) return false;
-
-		Map2Functor rhs = (Map2Functor) obj;
+		if (!(obj instanceof Map2Functor<?, ?, ?> rhs)) return false;
 		return fM.equals(rhs.fM)
 				&& fP1.equals(rhs.fP1)
 				&& fP2.equals(rhs.fP2);
