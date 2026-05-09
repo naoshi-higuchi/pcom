@@ -1,5 +1,8 @@
 package jp.nhiguchi.libs.pcom;
 
+import java.util.Collections;
+import java.util.Set;
+
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
 /**
@@ -16,7 +19,7 @@ final class StringFunctor implements ParseFunctor<String> {
 
 	public Result<String> parse(Context c, Position p) {
 		if (!p.startsWith(fStr)) {
-			return fail(c, p);
+			return fail(c, p, Collections.singleton("'" + fStr + "'"));
 		}
 
 		Position next = p.next(fStr.length());

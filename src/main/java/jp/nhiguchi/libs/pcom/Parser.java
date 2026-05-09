@@ -1,6 +1,8 @@
 package jp.nhiguchi.libs.pcom;
 
 import java.util.*;
+import java.util.Set;
+import java.util.Collections;
 
 public final class Parser<T> {
 	private final ParseFunctor<T> fFunctor;
@@ -86,15 +88,23 @@ public final class Parser<T> {
 	}
 
 	static <T> Result<T> fail(Context c, Position p, Result.Error<?> err) {
-		return Result.fail(c.fOwner, p, err);
+		return Result.fail(c.fOwner, p, err, err.expectedTokens());
 	}
 
 	static <T> Result<T> fail(Context c, Position p) {
-		return Result.fail(c.fOwner, p);
+		return Result.fail(c.fOwner, p, Collections.emptySet());
 	}
 
 	static <T> Result<T> fail(Context c, Position p, List<Result.Error<?>> errors) {
-		return Result.fail(c.fOwner, p, errors);
+		Set<String> expectedTokens = new HashSet<>();
+		for (Result.Error<?> error : errors) {
+			expectedTokens.addAll(error.expectedTokens());
+		}
+		return Result.fail(c.fOwner, p, errors, expectedTokens);
+	}
+
+	static <T> Result<T> fail(Context c, Position p, Set<String> expectedTokens) {
+		return Result.fail(c.fOwner, p, expectedTokens);
 	}
 
 	Result<T> parse(Source s) {

@@ -1,5 +1,7 @@
 package jp.nhiguchi.libs.pcom;
 
+import java.util.Set;
+
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
 final class AndFunctor implements ParseFunctor<Void> {

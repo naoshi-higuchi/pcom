@@ -1,6 +1,7 @@
 package jp.nhiguchi.libs.pcom;
 
 import java.util.*;
+import java.util.Set;
 
 import jp.nhiguchi.libs.flist.*;
 import static jp.nhiguchi.libs.flist.FList.*;

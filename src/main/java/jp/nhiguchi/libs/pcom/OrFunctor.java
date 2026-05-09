@@ -17,6 +17,7 @@ final class OrFunctor<T> implements ParseFunctor<T> {
 	@SuppressWarnings("unchecked")
 	public Result<T> parse(Context c, Position p) {
 		FList<Result.Error<?>> causes = flist();
+		Set<String> expectedTokens = new HashSet<>();
 
 		for (Parser<? extends T> par : fPs) {
 			Result<? extends T> r = c.apply(par, p);
@@ -26,6 +27,7 @@ final class OrFunctor<T> implements ParseFunctor<T> {
 			}
 			Result.Error<?> err = r.error();
 			causes = cons(err, causes);
+			expectedTokens.addAll(err.expectedTokens());
 		}
 
 		return fail(c, p, causes.reverse());

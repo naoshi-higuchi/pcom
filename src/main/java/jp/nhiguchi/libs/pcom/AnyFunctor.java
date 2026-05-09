@@ -1,5 +1,8 @@
 package jp.nhiguchi.libs.pcom;
 
+import java.util.Collections;
+import java.util.Set;
+
 import static jp.nhiguchi.libs.pcom.Parser.*;
 
 /**
@@ -18,7 +21,7 @@ final class AnyFunctor implements ParseFunctor<String> {
 
 	public Result<String> parse(Context c, Position p) {
 		String val = p.head();
-		if (val == null) return fail(c, p);
+		if (val == null) return fail(c, p, Collections.singleton("any character"));
 
 		return Result.success(val, p.next(1));
 	}

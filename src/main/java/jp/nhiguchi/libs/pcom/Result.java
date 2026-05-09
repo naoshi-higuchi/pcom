@@ -2,6 +2,9 @@ package jp.nhiguchi.libs.pcom;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.Collections;
+import java.util.HashSet;
 
 import static jp.nhiguchi.libs.flist.FList.*;
 
@@ -10,11 +13,13 @@ public final class Result<T> {
 		private final Parser<T> fParser;
 		private final Position fPos;
 		private final List<Error<?>> fCauses;
+		private final Set<String> fExpectedTokens;
 
-		private Error(Parser<T> p, Position pos, List<Error<?>> causes) {
+		private Error(Parser<T> p, Position pos, List<Error<?>> causes, Set<String> expectedTokens) {
 			fParser = p;
 			fPos = pos;
 			fCauses = causes;
+			fExpectedTokens = Collections.unmodifiableSet(new HashSet<>(expectedTokens));
 		}
 
 		public Parser<T> parser() {
@@ -29,6 +34,10 @@ public final class Result<T> {
 			return fCauses;
 		}
 
+		public Set<String> expectedTokens() {
+			return fExpectedTokens;
+		}
+
 		@Override
 		public boolean equals(Object obj) {
 			if (obj == null) return false;
@@ -36,14 +45,16 @@ public final class Result<T> {
 			if (!(obj instanceof Error<?> rhs)) return false;
 			return Objects.equals(fParser, rhs.fParser)
 					&& Objects.equals(fPos, rhs.fPos)
-					&& Objects.equals(fCauses, rhs.fCauses);
+					&& Objects.equals(fCauses, rhs.fCauses)
+					&& Objects.equals(fExpectedTokens, rhs.fExpectedTokens);
 		}
 
 		@Override
 		public int hashCode() {
 			return Objects.hashCode(fParser)
 					+ Objects.hashCode(fPos)
-					+ Objects.hashCode(fCauses);
+					+ Objects.hashCode(fCauses)
+					+ Objects.hashCode(fExpectedTokens);
 		}
 
 		@Override
@@ -53,8 +64,12 @@ public final class Result<T> {
 			sb.append(", @");
 			sb.append(fPos.asInt());
 			if (fCauses != null) {
-				sb.append(", ");
+				sb.append(", causes=");
 				sb.append(fCauses.toString());
+			}
+			if (!fExpectedTokens.isEmpty()) {
+				sb.append(", expected=");
+				sb.append(fExpectedTokens.toString());
 			}
 			sb.append(")");
 			return sb.toString();
@@ -98,26 +113,45 @@ public final class Result<T> {
 		return new Result<>(value, next, null);
 	}
 
+	static <T> Result<T> fail(Parser<?> p, Position pos, List<Error<?>> causes, Set<String> expectedTokens) {
+		if (p == null || pos == null || causes == null || expectedTokens == null)
+			throw new NullPointerException();
+		// p is Parser<?> but Error<T> stores Parser<T>; safe by erasure at runtime
+		return new Result<>(null, null, new Error<>((Parser<T>) p, pos, flist(causes), expectedTokens));
+	}
+
+	static <T> Result<T> fail(Parser<?> p, Position pos, Error<?> cause, Set<String> expectedTokens) {
+		if (p == null || pos == null || cause == null || expectedTokens == null)
+			throw new NullPointerException();
+		return new Result<>(null, null, new Error<>((Parser<T>) p, pos, flist((Error<T>) cause), expectedTokens));
+	}
+
+	static <T> Result<T> fail(Parser<?> p, Position pos, Set<String> expectedTokens) {
+		if (p == null || pos == null || expectedTokens == null)
+			throw new NullPointerException();
+		return new Result<>(null, null, new Error<>((Parser<T>) p, pos, null, expectedTokens));
+	}
+
 	@SuppressWarnings("unchecked")
 	static <T> Result<T> fail(Parser<?> p, Position pos, List<Error<?>> causes) {
 		if (p == null || pos == null || causes == null)
 			throw new NullPointerException();
 		// p is Parser<?> but Error<T> stores Parser<T>; safe by erasure at runtime
-		return new Result<>(null, null, new Error<>((Parser<T>) p, pos, flist(causes)));
+		return new Result<>(null, null, new Error<>((Parser<T>) p, pos, flist(causes), Collections.emptySet()));
 	}
 
 	@SuppressWarnings("unchecked")
 	static <T> Result<T> fail(Parser<?> p, Position pos, Error<?> cause) {
 		if (p == null || pos == null || cause == null)
 			throw new NullPointerException();
-		return new Result<>(null, null, new Error<>((Parser<T>) p, pos, flist((Error<T>) cause)));
+		return new Result<>(null, null, new Error<>((Parser<T>) p, pos, flist((Error<T>) cause), Collections.emptySet()));
 	}
 
 	@SuppressWarnings("unchecked")
 	static <T> Result<T> fail(Parser<?> p, Position pos) {
 		if (p == null || pos == null)
 			throw new NullPointerException();
-		return new Result<>(null, null, new Error<>((Parser<T>) p, pos, null));
+		return new Result<>(null, null, new Error<>((Parser<T>) p, pos, null, Collections.emptySet()));
 	}
 
 	@Override
