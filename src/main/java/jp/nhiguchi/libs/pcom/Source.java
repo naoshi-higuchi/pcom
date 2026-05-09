@@ -44,10 +44,12 @@ class Source {
 		while (len < n) {
 			try {
 				fBuf.clear();
-				len += fReadable.read(fBuf);
-				if (len == -1) break;
+				int nread = fReadable.read(fBuf);
+				if (nread == -1) break;
 
+				fBuf.flip();
 				sb.append(fBuf.toString());
+				len += nread;
 			} catch (IOException e) {
 				throw new RuntimeException(e);
 			}
