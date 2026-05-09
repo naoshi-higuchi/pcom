@@ -5,9 +5,55 @@ import org.junit.jupiter.api.*;
 
 import static jp.nhiguchi.libs.pcom.Parsers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OppBuilderTest {
+
+	@Test
+	public void testAmbiguousGrammar() {
+		// YFX and XFY
+		assertThrows(IllegalArgumentException.class, () -> {
+			OppBuilder<Integer> builder = new OppBuilder<>();
+			builder.add(Operator.infixL(100, (x, y) -> x + y, string("+")));
+			builder.add(Operator.infixR(100, (x, y) -> x + y, string("-")));
+		});
+
+		// YFX and YF
+		assertThrows(IllegalArgumentException.class, () -> {
+			OppBuilder<Integer> builder = new OppBuilder<>();
+			builder.add(Operator.infixL(100, (x, y) -> x + y, string("+")));
+			builder.add(Operator.postfixL(100, x -> x, string("++")));
+		});
+
+		// YFX and FY
+		assertThrows(IllegalArgumentException.class, () -> {
+			OppBuilder<Integer> builder = new OppBuilder<>();
+			builder.add(Operator.infixL(100, (x, y) -> x + y, string("+")));
+			builder.add(Operator.prefixR(100, x -> x, string("++")));
+		});
+
+		// XFY and YF
+		assertThrows(IllegalArgumentException.class, () -> {
+			OppBuilder<Integer> builder = new OppBuilder<>();
+			builder.add(Operator.infixR(100, (x, y) -> x + y, string("+")));
+			builder.add(Operator.postfixL(100, x -> x, string("++")));
+		});
+
+		// XFY and FY
+		assertThrows(IllegalArgumentException.class, () -> {
+			OppBuilder<Integer> builder = new OppBuilder<>();
+			builder.add(Operator.infixR(100, (x, y) -> x + y, string("+")));
+			builder.add(Operator.prefixR(100, x -> x, string("++")));
+		});
+
+		// FY and YF
+		assertThrows(IllegalArgumentException.class, () -> {
+			OppBuilder<Integer> builder = new OppBuilder<>();
+			builder.add(Operator.prefixR(100, x -> x, string("++")));
+			builder.add(Operator.postfixL(100, x -> x, string("--")));
+		});
+	}
 
 	@Test
 	public void testToParser() {
