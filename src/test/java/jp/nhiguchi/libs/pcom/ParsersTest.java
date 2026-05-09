@@ -2,6 +2,10 @@ package jp.nhiguchi.libs.pcom;
 
 import java.io.StringReader;
 import java.util.List;
+import java.util.Collections;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Arrays;
 
 import jp.nhiguchi.libs.tuple.Pair;
 import org.junit.jupiter.api.*;
@@ -499,5 +503,67 @@ public class ParsersTest {
 		Result<?> fail = p.parse("xyz");
 
 		assertSame(p, fail.error().parser());
-	}
+    }
+
+    // --- Expected Tokens Tests ---
+
+    @Test
+    public void testExpectedTokensStringFailure() {
+        Parser<String> p = string("hello");
+        Result<String> r = p.parse("world");
+        assertTrue(r.isFail());
+        assertEquals(Collections.singleton("'hello'"), r.error().expectedTokens());
+    }
+
+    @Test
+    public void testExpectedTokensAnyFailure() {
+        Parser<String> p = any();
+        Result<String> r = p.parse("");
+        assertTrue(r.isFail());
+        assertEquals(Collections.singleton("any character"), r.error().expectedTokens());
+    }
+
+    @Test
+    public void testExpectedTokensOrFailure() {
+        Parser<String> p = or(string("foo"), string("bar"));
+        Result<String> r = p.parse("baz");
+        assertTrue(r.isFail());
+        Set<String> expected = new HashSet<>(Arrays.asList("'foo'", "'bar'"));
+        assertEquals(expected, r.error().expectedTokens());
+    }
+
+    @Test
+    public void testExpectedTokensSeqFailure() {
+        Parser<List<String>> p = seq(string("first"), string("second"));
+        Result<List<String>> r = p.parse("first third");
+        assertTrue(r.isFail());
+        assertEquals(Collections.singleton("'second'"), r.error().expectedTokens());
+    }
+
+    @Test
+    public void testExpectedTokensAndFailure() {
+        Parser<Void> p = and(string("lookahead"));
+        Result<Void> r = p.parse("no match");
+        assertTrue(r.isFail());
+        assertEquals(Collections.singleton("'lookahead'"), r.error().expectedTokens());
+    }
+
+    @Test
+    public void testExpectedTokensNotFailure() {
+        Parser<Void> p = not(string("unexpected"));
+        Result<Void> r = p.parse("unexpected input");
+        assertTrue(r.isFail());
+        assertTrue(r.error().expectedTokens().isEmpty());
+    }
+
+    @Test
+    public void testExpectedTokensResultErrorToString() {
+        Parser<String> p = string("expected");
+        Result<String> r = p.parse("actual");
+        assertTrue(r.isFail());
+        String expectedToString = "error(string(\"expected\"), @0, expected=[\'expected\'])";
+        // The exact toString output might vary slightly based on internal parser representation,
+        // but it should contain the expected tokens.
+        assertTrue(r.error().toString().contains("expected=['expected']"));
+    }
 }
