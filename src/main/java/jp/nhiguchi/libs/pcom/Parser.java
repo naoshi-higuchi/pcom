@@ -4,6 +4,19 @@ import java.util.*;
 import java.util.Set;
 import java.util.Collections;
 
+/**
+ * Represents a parser that attempts to match a sequence of characters from an input
+ * source and transform it into a value of type {@code T}.
+ * <p>
+ * {@code Parser} instances are immutable and value-typed. Two parsers are considered
+ * equal if their internal structure (the {@link ParseFunctor} they wrap) is equal.
+ * <p>
+ * This library implements Parsing Expression Grammars (PEG) and uses packrat memoization
+ * to ensure that each {@code (parser, position)} pair is evaluated at most once
+ * per {@code parse()} call, which guarantees linear time complexity for many grammars.
+ *
+ * @param <T> The type of the value produced by this parser upon successful parsing.
+ */
 public final class Parser<T> {
 	private final ParseFunctor<T> fFunctor;
 
@@ -112,19 +125,50 @@ public final class Parser<T> {
 		return doParse(arg);
 	}
 
+	/**
+	 * Attempts to parse the given string input using this parser.
+	 *
+	 * @param str The string input to parse.
+	 * @return A {@link Result} indicating either success with the parsed value and
+	 *         remaining input position, or failure with error details.
+	 */
 	public Result<T> parse(String str) {
 		return parse(Source.source(str));
 	}
 
+	/**
+	 * Attempts to parse the input from the given {@link Readable} source using this parser.
+	 *
+	 * @param r The {@link Readable} source to parse.
+	 * @return A {@link Result} indicating either success with the parsed value and
+	 *         remaining input position, or failure with error details.
+	 */
 	public Result<T> parse(Readable r) {
 		return parse(Source.source(r));
 	}
 
+	/**
+	 * Attempts to parse starting from a specific {@link Position} in an input source.
+	 * This is useful for continuing a parse from a known point or for internal recursive calls.
+	 *
+	 * @param pos The starting {@link Position} in the input source.
+	 * @return A {@link Result} indicating either success with the parsed value and
+	 *         remaining input position, or failure with error details.
+	 */
 	public Result<T> parse(Position pos) {
 		Arg arg = new Arg(pos, new Memo());
 		return doParse(arg);
 	}
 
+	/**
+	 * Compares this parser to the specified object. The result is {@code true} if and only if
+	 * the argument is not {@code null} and is a {@code Parser} object that represents the same
+	 * internal parsing logic (i.e., their {@link ParseFunctor}s are equal).
+	 *
+	 * @param obj The object to compare this {@code Parser} against.
+	 * @return {@code true} if the given object represents a {@code Parser} equivalent to this parser,
+	 *         {@code false} otherwise.
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
@@ -133,11 +177,23 @@ public final class Parser<T> {
 		return fFunctor.equals(rhs.fFunctor);
 	}
 
+	/**
+	 * Returns a hash code for this parser. The hash code is computed based on the
+	 * hash code of its internal {@link ParseFunctor}.
+	 *
+	 * @return A hash code value for this object.
+	 */
 	@Override
 	public int hashCode() {
 		return fFunctor.hashCode();
 	}
 
+	/**
+	 * Returns a string representation of this parser. The string representation
+	 * is delegated to its internal {@link ParseFunctor}.
+	 *
+	 * @return A string representation of this object.
+	 */
 	@Override
 	public String toString() {
 		return fFunctor.toString();

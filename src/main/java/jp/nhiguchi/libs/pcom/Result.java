@@ -9,6 +9,11 @@ import java.util.HashSet;
 import static jp.nhiguchi.libs.flist.FList.*;
 
 public final class Result<T> {
+	/**
+	 * Represents an error that occurred during parsing.
+	 *
+	 * @param <T> the type of the value that the parser was trying to produce
+	 */
 	public static final class Error<T> {
 		private final Parser<T> fParser;
 		private final Position fPos;
@@ -22,18 +27,38 @@ public final class Result<T> {
 			fExpectedTokens = Collections.unmodifiableSet(new HashSet<>(expectedTokens));
 		}
 
+		/**
+		 * Returns the parser that caused this error.
+		 *
+		 * @return the parser that caused this error
+		 */
 		public Parser<T> parser() {
 			return fParser;
 		}
 
+		/**
+		 * Returns the position in the input where the error occurred.
+		 *
+		 * @return the position where the error occurred
+		 */
 		public Position position() {
 			return fPos;
 		}
 
+		/**
+		 * Returns a list of underlying causes for this error, if any.
+		 *
+		 * @return a list of underlying causes
+		 */
 		public List<Error<?>> causes() {
 			return fCauses;
 		}
 
+		/**
+		 * Returns a set of tokens that were expected at the error position.
+		 *
+		 * @return a set of expected tokens
+		 */
 		public Set<String> expectedTokens() {
 			return fExpectedTokens;
 		}
@@ -86,24 +111,52 @@ public final class Result<T> {
 		fError = error;
 	}
 
+	/**
+	 * Returns the parsed value if the result is a success.
+	 *
+	 * @return the parsed value
+	 * @throws UnsupportedOperationException if the result is a failure
+	 */
 	public T value() {
 		if (isFail()) throw new UnsupportedOperationException();
 		return fValue;
 	}
 
+	/**
+	 * Returns the remaining position in the input if the result is a success.
+	 *
+	 * @return the remaining position
+	 * @throws UnsupportedOperationException if the result is a failure
+	 */
 	public Position rest() {
 		if (isFail()) throw new UnsupportedOperationException();
 		return fRest;
 	}
 
+	/**
+	 * Checks if this result represents a successful parse.
+	 *
+	 * @return {@code true} if the parse was successful, {@code false} otherwise
+	 */
 	public boolean isSuccess() {
 		return fError == null;
 	}
 
+	/**
+	 * Checks if this result represents a failed parse.
+	 *
+	 * @return {@code true} if the parse failed, {@code false} otherwise
+	 */
 	public boolean isFail() {
 		return fError != null;
 	}
 
+	/**
+	 * Returns the error details if the result is a failure.
+	 *
+	 * @return the error details
+	 * @throws UnsupportedOperationException if the result is a success
+	 */
 	public Error<T> error() {
 		if (isSuccess()) throw new UnsupportedOperationException();
 		return fError;

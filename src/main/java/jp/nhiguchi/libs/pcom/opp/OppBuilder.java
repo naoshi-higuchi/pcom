@@ -12,11 +12,19 @@ import jp.nhiguchi.libs.pcom.*;
 import jp.nhiguchi.libs.pcom.opp.Operator.Fixity;
 import static jp.nhiguchi.libs.pcom.opp.Operator.Fixity.*;
 
+/**
+ * Builds an operator-precedence parser.
+ *
+ * @param <T> the type of the value returned by the parser
+ */
 public class OppBuilder<T> {
 	private final NavigableMap<Integer, FList<Operator<T>>> fMap = new TreeMap<>();
 	private final HashSet<Pair<Parser<String>, Parser<String>>> fParens = new HashSet<>();
 	private Parser<T> fOperandParser = null;
 
+	/**
+	 * Constructs a new {@code OppBuilder}.
+	 */
 	public OppBuilder() {
 	}
 
@@ -33,6 +41,13 @@ public class OppBuilder<T> {
 				|| (fixes.contains(FY) && fixes.contains(YF));
 	}
 
+	/**
+	 * Adds an operator to this builder.
+	 *
+	 * @param op the operator to add
+	 * @return this builder
+	 * @throws IllegalArgumentException if the grammar becomes ambiguous
+	 */
 	public OppBuilder<T> add(Operator<T> op) {
 		FList<Operator<T>> column = fMap.get(op.prec());
 		column = (column == null) ? flist(op) : cons(op, column);
@@ -43,6 +58,14 @@ public class OppBuilder<T> {
 		return this;
 	}
 
+	/**
+	 * Adds a pair of parentheses to this builder.
+	 *
+	 * @param lPar the left parenthesis parser
+	 * @param rPar the right parenthesis parser
+	 * @return this builder
+	 * @throws IllegalArgumentException if {@code lPar} or {@code rPar} is {@code null}
+	 */
 	public OppBuilder<T> addParentheses(Parser<String> lPar,
 			Parser<String> rPar) {
 		if (lPar == null || rPar == null) {
@@ -53,11 +76,22 @@ public class OppBuilder<T> {
 		return this;
 	}
 
+	/**
+	 * Sets the operand parser.
+	 *
+	 * @param p the operand parser
+	 * @return this builder
+	 */
 	public OppBuilder<T> setOperandParser(Parser<T> p) {
 		fOperandParser = p;
 		return this;
 	}
 
+	/**
+	 * Builds and returns the operator-precedence parser.
+	 *
+	 * @return the built parser
+	 */
 	public Parser<T> toParser() {
 		return OppParsers.oppParser(
 				OpTable.create(fMap), flist(fParens), fOperandParser);

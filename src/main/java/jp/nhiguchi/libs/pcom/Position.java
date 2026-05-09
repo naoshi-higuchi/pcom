@@ -4,6 +4,11 @@ package jp.nhiguchi.libs.pcom;
  *
  * @author naoshi
  */
+/**
+ * Represents a specific position within a {@link Source} of characters.
+ * It encapsulates the source and the current index, providing methods to
+ * navigate and inspect the input from this point.
+ */
 public final class Position {
 	private final Source fSrc;
 	private final int fPos;
@@ -29,10 +34,20 @@ public final class Position {
 		return new Position(fSrc, fPos + run);
 	}
 
+	/**
+	 * Checks if this position is at the end of the source.
+	 *
+	 * @return {@code true} if at the end of the source, {@code false} otherwise
+	 */
 	public boolean isEnd() {
 		return fSrc.isEnd(fPos);
 	}
 
+	/**
+	 * Returns the integer representation of this position (the character index).
+	 *
+	 * @return the character index of this position
+	 */
 	public int asInt() {
 		return fPos;
 	}
